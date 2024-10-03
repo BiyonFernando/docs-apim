@@ -8,6 +8,8 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
 ## Setting up using Root Token authentication
 
+This method uses a static root token to authenticate with HashiCorp Vault, providing direct and full access to Vault's secrets.
+
 ### Step 1 - Setup HashiCorp Vault
 
 1. Start the HashiCorp Vault server and create a new **KV engine**. Enter a path name when creating the kv engine (e.g., `wso2apim`). The following commands can be used to add secrets with the HashiCorp Vault.
@@ -103,9 +105,8 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
       
     === "Windows"
-        ```
         The file name should be `hashicorpRootToken-tmp.txt`.
-        ```
+
 
     !!! note
         When you add `tmp` to the file name, note that this will automatically get deleted from the file system after the server starts. Alternatively, if you want to retain the password file after the server starts, the file should be named as follows:
@@ -120,21 +121,19 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
 2. Start the WSO2 API Manager Server and enter the keystore password at startup when prompted:
 
-    ```shell
-    [Enter KeyStore and Private Key Password :] wso2carbon
-    ```
+    ><pre>[Enter KeyStore and Private Key Password :] wso2carbon</pre>
 
 
 ## Setting up using App-Role authentication
+
+This method uses dynamic authentication based on role IDs and secret IDs, allowing for secure, scoped access to Vault without the need for storing static tokens.
 
 ### Step 1 - Setup HashiCorp Vault
 
 1. Start the HashiCorp Vault server and set the environment variables.
 
-    ```shell
-    export VAULT_ADDR='http://127.0.0.1:8200'
-    export VAULT_TOKEN='<root token>'
-    ```
+    ><pre>export VAULT_ADDR='https://127.0.0.1:8200'
+    export VAULT_TOKEN='<root token>'</pre>
 
 2. Include the policy in the `kv-read-write.hcl` file as below.
 
@@ -146,34 +145,25 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
 3. Upload the kv policy using the command below.
 
-    ```shell
-    vault policy write kv-read-write kv-read-write.hcl
-    ```
+    ><pre>vault policy write kv-read-write kv-read-write.hcl</pre>
 
 4. The following commands can be used to create the AppRole using the created policy.
 
-    ```shell
-    vault auth enable approle
-    ```
-    ```shell   
-    vault write auth/approle/role/my-role \
+    ><pre>vault auth enable approle</pre>
+    ><pre>vault write auth/approle/role/my-role \
         token_policies="kv-read-write" \
         token_type="service" \
         token_ttl="24h" \
         token_max_ttl="72h"
-    ```
+    </pre>
 
 5. Get the role-id as below.
 
-    ```shell
-    vault read auth/approle/role/my-role/role-id
-    ```
+    ><pre>vault read auth/approle/role/my-role/role-id</pre>
 
 6. Get the secret-id as below.
 
-    ```shell
-    vault write -f auth/approle/role/my-role/secret-id
-    ```
+    ><pre>vault write -f auth/approle/role/my-role/secret-id</pre>
 
 7. Create the kv engine with a path name (e.g., `wso2apim`).
 
@@ -214,7 +204,7 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
     secVault.enabled=true
     secretRepositories=vault
     secretRepositories.vault.provider=org.wso2.carbon.securevault.hashicorp.repository.HashiCorpSecretRepositoryProvider
-    secretRepositories.vault.properties.address=http://127.0.0.1:8200
+    secretRepositories.vault.properties.address=https://127.0.0.1:8200
     secretRepositories.vault.properties.namespace=ns1
     secretRepositories.vault.properties.enginePath=wso2apim
     secretRepositories.vault.properties.engineVersion=2
@@ -235,9 +225,9 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
     Then append `org-wso2-carbon-securevault-hashicorp` to the `loggers` list in the same file as follows.
 
-        ```properties
-        loggers = AUDIT_LOG, trace-messages, ..., org-wso2-carbon-securevault-hashicorp
-        ```
+    ```properties
+    loggers = AUDIT_LOG, trace-messages, ..., org-wso2-carbon-securevault-hashicorp
+    ```
 
 ### Step 3 - Update passwords with their aliases
 
@@ -287,7 +277,8 @@ Using [HashiCorp Vault extension](https://github.com/wso2-extensions/carbon-secu
 
 
 2. Start the WSO2 API Manager Server and enter the keystore password at startup when prompted.
-    ```shell
-    [Enter KeyStore and Private Key Password :] wso2carbon
-    ```
+
+    ><pre>[Enter KeyStore and Private Key Password :] wso2carbon  </pre>
+    
+    
 
